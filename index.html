@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор беременности: рассчитайте дату родов и отслеживайте этапы</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <meta name="description" content="Используйте наш калькулятор беременности, чтобы узнать дату родов, отслеживать ключевые этапы и получать еженедельные советы для здоровой беременности. Просто, точно и удобно!" />
+    <meta name="keywords" content="калькулятор беременности, рассчитать дату родов, этапы беременности, советы для беременных, здоровье беременности, инструменты для беременности" />
+    <link rel="shortcut icon" href="/favicon.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="canonical" href="/" />
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" >
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+    
+       ym(99906655, "init", {
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true
+       });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/99906655" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        body {
+            background-color: #eee !important;
+        }
+        .progress-bar-pregnancy {
+            transition: width 0.5s ease-in-out;
+        }
+        .due-date-circle {
+            width: 200px;
+            height: 200px;
+            border: 4px solid #ff85a2;
+            border-radius: 30px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); }
+            50% { transform: scale(1); }
+            100% { transform: scale(0.95); }
+        }
+        .active {
+            color: var(--bs-primary-text-emphasis) !important;
+            background: var(--bs-primary-bg-subtle) !important;
+            border-color: var( --bs-primary-border-subtle ) !important;
+        }
+        .card {
+            border: none !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-dark shadow-sm" style="background-color: var(--bs-indigo);">
+            <div class="container">
+                <a class="navbar-brand fw-bold fs-5 d-block w-100 text-center m-0 pt-0" href="/">
+                    <img src="/favicon.png" class="img-fluid rounded-circle" style="width:36px !important;height: 36px !important;" /> Калькулятор беременности
+                </a>
+            </div>
+        </nav>
+    </header>
+    <div class="container py-5">
+        <div class="text-center mb-4 fw-bold fs-4"><img src="/favicon.png" class="img-fluid rounded-circle" style="width:36px !important;height: 36px !important;" /> Калькулятор беременности</div>
+        <!-- Calculator Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h3 class="mb-4 fw-bold fs-5">Due Date Calculator</h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Last Menstrual Period (LMP)</label>
+                        <input type="date" class="form-control" id="lmpDate">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Conception Date (optional)</label>
+                        <input type="date" class="form-control" id="conceptionDate">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" style="display: none;">
+            <!-- Due Date Overview -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <div class="due-date-circle mx-auto d-flex align-items-center justify-content-center mb-4">
+                        <div class="text-center">
+                            <h5 class="mb-0">Due Date</h5>
+                            <h2 id="dueDate" class="mb-0"></h2>
+                        </div>
+                    </div>
+                    <h4>Current Pregnancy Progress</h4>
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="stat-box">
+                                <div class="h2 mb-0" id="currentWeek"></div>
+                                <small>Weeks Pregnant</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-box">
+                                <div class="h2 mb-0" id="currentDays"></div>
+                                <small>Days Pregnant</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-box">
+                                <div class="h2 mb-0" id="trimester"></div>
+                                <small>Trimester</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress mt-4" style="height: 25px;">
+                        <div class="progress-bar progress-bar-pregnancy bg-success" role="progressbar" style="width: 0%">
+                            <span class="progress-text"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Milestones & Weight Gain -->
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h4 class="mb-3">Key Milestones</h4>
+                            <div id="milestonesList" class="list-group"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <!-- Weekly Summary -->
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="mb-3">Weekly Tips</h4>
+                            <div id="weeklySummary"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card rounded-3 shadow-sm border-0 mt-4">
+            <div class="card-header border-0" style="background-color: var(--bs-indigo);">
+                <h1 class="fs-4 fw-bold text-light">Калькулятор беременности: рассчитайте дату родов и отслеживайте этапы</h1>
+            </div>
+            <div class="card-body">
+                <p><strong>Калькулятор беременности: Ваш помощник в легкой и здоровой беременности</strong></p>
+                <p>Беременность — это одно из самых волнительных периодов в жизни женщины, но она также может вызывать много вопросов и переживаний. Чтобы сделать этот период проще и понятнее, мы создали <strong>Калькулятор беременности</strong>! Этот удобный онлайн-инструмент поможет вам рассчитать дату родов, отслеживать ключевые этапы развития малыша и получать полезные советы на каждой неделе беременности.</p>
+                <h4><strong>Что такое калькулятор беременности?</strong></h4>
+                <p>Калькулятор беременности — это простой инструмент, который помогает рассчитать предполагаемую дату родов на основе даты последней менструации (ДПМ) или зачатия. Он также предоставляет подробную информацию о каждой неделе беременности, выделяя важные этапы и давая полезные рекомендации.</p>
+                <h4><strong>Зачем использовать наш калькулятор беременности?</strong></h4>
+                <ol>
+                   <li><strong>Точная дата родов:</strong> Узнайте, когда ожидать появления малыша.</li>
+                   <li><strong>Ключевые этапы:</strong> Следите за ростом и развитием вашего ребенка.</li>
+                   <li><strong>Еженедельные советы:</strong> Получайте персонализированные рекомендации для каждого этапа беременности.</li>
+                   <li><strong>Простота использования:</strong> Просто введите дату последней менструации или зачатия, и калькулятор сделает все остальное.</li>
+                </ol>
+                <h4><strong>Как использовать калькулятор беременности</strong></h4>
+                <ol>
+                   <li>Посетите наш сайт и найдите инструмент "<a href="/">Калькулятор беременности</a>".</li>
+                   <li>Введите дату последней менструации или зачатия.</li>
+                   <li>Нажмите “Рассчитать”, чтобы получить дату родов и график беременности.</li>
+                   <li>Изучайте еженедельные обновления и советы, чтобы оставаться в курсе.</li>
+                </ol>
+                <h4><strong>Преимущества использования калькулятора</strong></h4>
+                <ul>
+                   <li><strong>Планирование:</strong> Подготовьтесь к посещениям врача, декретному отпуску и подготовке к рождению ребенка.</li>
+                   <li><strong>Уверенность:</strong> Понимайте, что происходит с вашим телом и малышом.</li>
+                   <li><strong>Персонализированные рекомендации:</strong> Получайте советы, адаптированные к вашей неделе беременности.</li>
+                </ul>
+                <h4><strong>Кому подойдет калькулятор беременности?</strong></h4>
+                <ul>
+                   <li><strong>Будущим мамам:</strong> Узнайте, чего ожидать на каждом этапе беременности.</li>
+                   <li><strong>Опытным мамам:</strong> Следите за своей беременностью с легкостью.</li>
+                   <li><strong>Партнерам и семье:</strong> Поддерживайте свою любимую, оставаясь в курсе.</li>
+                </ul>
+                <h4><strong>Заключение</strong></h4>
+                <p>Наш <strong>Калькулятор беременности</strong> создан, чтобы сделать ваш путь к материнству легким и приятным. С его помощью вы сможете узнать точную дату родов, отслеживать ключевые этапы и получать полезные советы. Попробуйте его уже сегодня и сделайте первый шаг к спокойной и здоровой беременности!</p>
+
+                <div class="alert alert-warning rounded-3 mt-3">
+                        <h3 class="d-block fw-bold fs-4"><i class="bi bi-info-circle-fill"></i> Отказ от ответственности</h3>
+                        <p>Информация, предоставляемая <strong>Калькулятором беременности</strong>,
+                        предназначена исключительно для общих информационных целей и не должна 
+                        рассматриваться как замена профессиональной медицинской консультации, 
+                        диагностики или лечения. Предполагаемая дата родов, этапы развития и 
+                        еженедельные советы, сгенерированные инструментом, являются 
+                        приблизительными и основаны на предоставленных вами данных. Они могут не
+                        быть точными на 100% для каждого человека, так как течение беременности
+                        и сроки могут варьироваться в зависимости от множества факторов, 
+                        включая состояние здоровья, образ жизни и медицинскую историю.
+                     </p>
+                     <p>Всегда
+                        консультируйтесь с вашим врачом или квалифицированным медицинским 
+                        специалистом для получения персонализированных рекомендаций и решения 
+                        любых вопросов, связанных с вашей беременностью. Создатели данного 
+                        инструмента не несут ответственности за решения, принятые на основе 
+                        информации, предоставленной Калькулятором беременности.
+                     </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="p-3 text-center shadow-sm" style="background-color: var(--bs-indigo);">
+        <small class="text-light">&copy; 2025 Калькулятор беременности</small>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('lmpDate').addEventListener('change', calculatePregnancy);
+        document.getElementById('conceptionDate').addEventListener('change', calculatePregnancy);
+
+        function calculatePregnancy() {
+            const lmpDate = new Date(document.getElementById('lmpDate').value);
+            if (!lmpDate) return;
+
+            const today = new Date();
+            const dueDate = new Date(lmpDate);
+            dueDate.setDate(dueDate.getDate() + 280);
+
+            // Current progress calculations
+            const diffTime = Math.abs(today - lmpDate);
+            const daysPregnant = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const weeksPregnant = Math.floor(daysPregnant / 7);
+            const daysInWeek = daysPregnant % 7;
+            const progressPercentage = (daysPregnant / 280 * 100).toFixed(1);
+
+            // Update UI
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('dueDate').textContent = dueDate.toLocaleDateString();
+            document.getElementById('currentWeek').textContent = `${weeksPregnant}+${daysInWeek}`;
+            document.getElementById('currentDays').textContent = daysPregnant;
+            document.getElementById('trimester').textContent = 
+                weeksPregnant < 13 ? 'First' : weeksPregnant < 27 ? 'Second' : 'Third';
+            
+            // Update progress bar
+            const progressBar = document.querySelector('.progress-bar');
+            progressBar.style.width = `${progressPercentage}%`;
+            progressBar.innerHTML = `${progressPercentage}% Complete`;
+
+            updateMilestones(weeksPregnant);
+            updateWeeklySummary(weeksPregnant);
+        }
+
+        function updateMilestones(weeks){
+            console.log( weeks );
+            const milestones = [
+                { week: 4, title: 'Fertilized egg implants in the uterus. Early pregnancy hormones (hCG) are produced.', checked: weeks >= 4 },
+                { week: 5, title: 'Baby\'s heart begins to form, and the neural tube (which becomes the brain and spinal cord) starts developing.', checked: weeks >= 5 },
+                { week: 6, title: 'Baby\'s heart starts beating. Arms and leg buds appear.', checked: weeks >= 6 },
+                { week: 8, title: 'Major organs (heart, brain, lungs) begin to form. Baby is now called a fetus.', checked: weeks >= 8 },
+                { week: 10, title: 'Critical development of organs is complete. Fingers and toes are forming.', checked: weeks >= 10 },
+                { week: 12, title: 'Baby can make tiny movements (though you can’t feel them yet). Risk of miscarriage decreases significantly.', checked: weeks >= 12 },
+                { week: 14, title: 'Baby’s sex may be detectable via ultrasound. Baby starts growing hair.', checked: weeks >= 14 },
+                { week: 16, title: 'You may feel the baby’s first movements (called "quickening").', checked: weeks >= 16 },
+                { week: 18, title: 'Baby’s ears are fully developed, and they can hear sounds.', checked: weeks >= 18 },
+                { week: 20, title: 'Mid-pregnancy ultrasound (anatomy scan) to check baby’s growth and development.', checked: weeks >= 20 },
+                { week: 24, title: 'Baby’s lungs are developing. They can survive outside the womb with medical help if born prematurely.', checked: weeks >= 24 },
+                { week: 27, title: 'Baby’s eyes open, and they can recognize light and dark.', checked: weeks >= 27 },
+                { week: 28, title: 'Baby’s brain is developing rapidly. They can blink and dream.', checked: weeks >= 28 },
+                { week: 32, title: 'Baby gains weight quickly. Their bones are fully formed but still soft.', checked: weeks >= 32 },
+                { week: 34, title: 'Baby’s lungs are almost fully developed. They move into a head-down position for birth.', checked: weeks >= 34 },
+                { week: 36, title: 'Baby is considered full-term. They continue to gain weight and mature.', checked: weeks >= 36 },
+                { week: 38, title: 'Baby is ready for birth! They may drop lower into the pelvis (engagement) in preparation for delivery.', checked: weeks >= 38 }
+            ];
+
+            const list = document.getElementById('milestonesList');
+            list.innerHTML = milestones.map(m => `
+                <div class="list-group-item border-light text-dark mileston ${m.checked ? 'active' : 'd-none'}">
+                    <div class="d-flex justify-content-between">
+                        <span style="font-size:14px;"><b>Week ${m.week}:</b> ${m.title}</span>
+                        ${m.checked ? '<i class="bi bi-check-circle-fill text-primary"></i>' : '◻'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function calculateWeightRecommendation() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value) / 100;
+            if (!weight || !height) return;
+
+            const bmi = weight / (height * height);
+            let recommendation = '';
+            
+            if (bmi < 18.5) {
+                recommendation = '12.5-18 kg';
+            } else if (bmi < 25) {
+                recommendation = '11.5-16 kg';
+            } else if (bmi < 30) {
+                recommendation = '7-11.5 kg';
+            } else {
+                recommendation = '5-9 kg';
+            }
+
+            document.getElementById('weightRecommendation').innerHTML = `
+                <h5>Recommendation:</h5>
+                <p class="mb-0">BMI: ${bmi.toFixed(1)} (${getBMICategory(bmi)})</p>
+                <p class="mb-0">Recommended Weight Gain: ${recommendation}</p>
+            `;
+        }
+
+        function getBMICategory(bmi) {
+            if (bmi < 18.5) return 'Underweight';
+            if (bmi < 25) return 'Normal';
+            if (bmi < 30) return 'Overweight';
+            return 'Obese';
+        }
+
+        function updateWeeklySummary(week) {
+            const summaries = {
+                1: "Focus on preconception health. Take prenatal vitamins with folic acid and avoid alcohol, smoking, and caffeine.",
+                2: "Confirm pregnancy with a home test. Schedule your first prenatal appointment.",
+                3: "Start eating a balanced diet rich in fruits, vegetables, whole grains, and lean proteins.",
+                4: "Stay hydrated and rest as needed. Morning sickness may begin.",
+                5: "Avoid raw or undercooked foods to reduce the risk of foodborne illnesses.",
+                6: "Eat small, frequent meals to manage nausea. Ginger tea or crackers may help.",
+                7: "Avoid strenuous exercise. Opt for gentle activities like walking or prenatal yoga.",
+                8: "Get plenty of sleep and practice stress-relief techniques like deep breathing.",
+                9: "Continue taking prenatal vitamins. Avoid hot tubs and saunas.",
+                10: "Wear comfortable, loose-fitting clothing as your body begins to change.",
+                11: "Share your pregnancy news with family and friends if you feel ready.",
+                12: "Start moisturizing your belly to prevent stretch marks. Use a gentle, pregnancy-safe lotion.",
+                13: "Stay active with low-impact exercises like swimming or prenatal yoga.",
+                14: "Eat iron-rich foods (spinach, beans, lean meats) to prevent anemia.",
+                15: "Sleep on your side (preferably left side) to improve blood flow to the baby.",
+                16: "Stay hydrated and increase your fiber intake to prevent constipation.",
+                17: "Begin practicing Kegel exercises to strengthen pelvic floor muscles.",
+                18: "Invest in a supportive maternity bra as your breasts grow.",
+                19: "Schedule your anatomy scan and discuss any concerns with your doctor.",
+                20: "Avoid standing for long periods to reduce swelling in your legs and feet.",
+                21: "Start planning for maternity leave and baby essentials.",
+                22: "Monitor your weight gain and focus on nutrient-dense foods.",
+                23: "Stay mindful of your posture to avoid back pain.",
+                24: "Keep a pregnancy journal to document your journey.",
+                25: "Stay cool and avoid overheating, especially in hot weather.",
+                26: "Begin researching childbirth classes and breastfeeding tips.",
+                27: "Start counting fetal movements (kick counts) daily.",
+                28: "Elevate your feet to reduce swelling and improve circulation.",
+                29: "Pack your hospital bag with essentials for you and the baby.",
+                30: "Practice relaxation techniques to prepare for labor.",
+                31: "Avoid lifting heavy objects to prevent strain.",
+                32: "Sleep with extra pillows for support and comfort.",
+                33: "Finalize your birth plan and discuss it with your healthcare provider.",
+                34: "Stay hydrated and eat small, frequent meals to ease heartburn.",
+                35: "Rest as much as possible and avoid overexertion.",
+                36: "Watch for signs of labor (contractions, water breaking).",
+                37: "Double-check your hospital bag and baby’s nursery setup.",
+                38: "Stay calm and patient as you await labor.",
+                39: "Contact your doctor if you don’t go into labor by your due date.",
+                40: "Prepare for the arrival of your baby and enjoy these final moments of pregnancy."
+            };
+
+            const content = summaries[week] 
+                ? `<p>${summaries[week]}</p>`
+                : `<p>Track your baby's growth and maintain regular check-ups.</p>`;
+
+            document.getElementById('weeklySummary').innerHTML = `
+                <h5>Week ${week} Highlights</h5>
+                ${content}
+                <small class="text-muted">Always consult with your healthcare provider.</small>
+            `;
+        }
+    </script>
+</body>
+</html>
